@@ -17,9 +17,18 @@ def clean_steam_reviews(file_path, output_path):
     # 3. 너무 짧은 리뷰 제거 (의미 없는 단답형 필터링)
     # 총 글자 수가 10자 이상, 500자 미만인 리뷰만 필터링(500자 이상은 따로 저장)
     # 예: "nice game", "trash", "good" 등 원인 분석에 도움 안 되는 데이터 탈락
-    df = df[df['review'].apply(lambda x: len(x) >= 10 and len(x) < 500)]
-    after_length_filter = len(df)
-    print(f"[1차 필터링] 너무 짧은 단답형 리뷰 제거 완료: {initial_count - after_length_filter}개 삭제")
+    df = df[
+        df['text_len'] >= 10
+    ]
+    after_short_filter = len(df)
+    print(f"[1차 필터링] 너무 짧은 단답형 리뷰 제거 완료: {initial_count - after_short_filter}개 삭제")
+
+    df = df[
+        df['text_len'] < 500
+    ]
+
+    after_long_filter = len(df)
+    print(f"[1차 필터링] 너무 긴 장문 리뷰 제거 완료: {after_short_filter - after_long_filter}개 삭제")
 
     # 4. 영어가 아니거나 이모지/특수문자 도배 스팸 리뷰 필터링
     def is_valid_english_review(text):
@@ -36,7 +45,7 @@ def clean_steam_reviews(file_path, output_path):
 
     df = df[df['review'].apply(is_valid_english_review)]
     after_lang_filter = len(df)
-    print(f"[2차 필터링] 비영어 및 특수문자 도배 리뷰 제거 완료: {after_length_filter - after_lang_filter}개 삭제")
+    print(f"[2차 필터링] 비영어 및 특수문자 도배 리뷰 제거 완료: {after_long_filter - after_lang_filter}개 삭제")
     print("-" * 50)
 
     # 5. 최종 데이터 확인 및 저장

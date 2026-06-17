@@ -11,7 +11,7 @@ def count_text(data_path, output_path):
 
     # 문장의 길이(문자수) 세기
     for i in range(len(text)):
-        text_len.append(len(text[i]))
+        text_len.append(len(str(text[i])))
 
     df["text_len"] = text_len
     df.to_csv(data_path, index=False)
@@ -33,7 +33,8 @@ def main():
 
     # 결측치 제거
     raw_data = pd.read_csv(raw_data_path, encoding="utf-8")
-    data = raw_data.dropna(subset=["review"])
+    data = raw_data.dropna()
+    data['review'] = data['review'].astype(str).str.strip()
     data.to_csv(data_path, index=False)
 
     # 제거된 데이터 수 확인
@@ -52,15 +53,15 @@ def main():
     # 10 글자 미만
     count = list(pd.read_csv(text_len_path)['value'])
     print(count[:10])
-    under_10 = sum(count[:11])
+    under_10 = sum(count[:9])
     print("10글자 미만의 리뷰 데이터 수: ", under_10)
 
     # 학습용 중간값 데이터
-    mid_490 = sum(count[11:500])
+    mid_490 = sum(count[9:499])
     print("학습용 10-500자 데이터 수: ", mid_490)
 
     # 500 글자 이상
-    over_500 = sum(count[500:])
+    over_500 = sum(count[499:])
     print("500글자 이상의 리뷰 데이터 수: ", over_500)
 
     # 총 데이터 수
