@@ -15,8 +15,7 @@ def clean_steam_reviews(file_path, output_path):
     df['review'] = df['review'].astype(str).str.strip()
 
     # 3. 너무 짧은 리뷰 제거 (의미 없는 단답형 필터링)
-    # 총 글자 수가 10자 이상, 500자 미만인 리뷰만 필터링(500자 이상은 따로 저장)
-    # 예: "nice game", "trash", "good" 등 원인 분석에 도움 안 되는 데이터 탈락
+    # 총 글자 수가 10자 이상, 500자 미만인 리뷰만 저장
     df = df[
         df['text_len'] >= 10
     ]
@@ -38,8 +37,7 @@ def clean_steam_reviews(file_path, output_path):
         if len(text) == 0:
             return False
 
-        # 전체 텍스트 중 순수 영어 관련 글자의 비율 계산
-        # 이 비율이 70% 미만이면 러시아어, 중국어, 한국어가 섞였거나 이모지 도배 스팸일 확률이 높음
+        # 전체 텍스트 중 순수 영어 관련 글자의 비율이 70% 이상인 리뷰만 저장
         english_ratio = len(english_only) / len(text)
         return english_ratio >= 0.7
 
@@ -63,7 +61,6 @@ def main():
     data_path = "silksong_reviews.csv"
     cleaned_data_path = "silksong_reviews_cleaned.csv"
 
-    # 코드 실행
     cleaned_df = clean_steam_reviews(data_path, cleaned_data_path)
     cleaned_df.info()
 
